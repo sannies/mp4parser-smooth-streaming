@@ -3,26 +3,31 @@ package com.googlecode.mp4parser.tools.smoothstreamingdownloader;
 import com.coremedia.iso.Hex;
 import com.coremedia.iso.IsoFile;
 import com.coremedia.iso.IsoTypeReader;
-import com.coremedia.iso.boxes.*;
-import com.coremedia.iso.boxes.fragment.TrackFragmentBox;
+import com.coremedia.iso.boxes.Box;
+import com.coremedia.iso.boxes.CompositionTimeToSample;
+import com.coremedia.iso.boxes.SampleDependencyTypeBox;
+import com.coremedia.iso.boxes.SampleDescriptionBox;
+import com.coremedia.iso.boxes.SubSampleInformationBox;
+import com.coremedia.iso.boxes.TimeToSampleBox;
+import com.coremedia.iso.boxes.VideoMediaHeaderBox;
 import com.coremedia.iso.boxes.fragment.TrackRunBox;
 import com.coremedia.iso.boxes.h264.AvcConfigurationBox;
-import com.coremedia.iso.boxes.mdat.SampleList;
 import com.coremedia.iso.boxes.sampleentry.VisualSampleEntry;
 import com.googlecode.mp4parser.authoring.Track;
 import com.googlecode.mp4parser.authoring.TrackMetaData;
 import com.googlecode.mp4parser.util.Path;
-import nu.xom.*;
+import nu.xom.Builder;
+import nu.xom.Document;
+import nu.xom.Element;
+import nu.xom.Nodes;
+import nu.xom.ParsingException;
 import org.apache.commons.io.IOUtils;
 
-
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
 import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -56,7 +61,11 @@ public class SmoothStreamingTrack implements Track {
         long time = 0;
         for (int i = 0; i < fragments.size(); i++) {
             URI fragment = manifestFile.resolve(url.replace("{bitrate}", bitRate).replace("{start time}", Long.toString(time)));
-            this.fragments.add(new IsoFile(Channels.newChannel(fragment.toURL().openStream())));
+            File f = File.createTempFile(SmoothStreamingTrack.class.getSimpleName(), "");
+            FileOutputStream fos = new FileOutputStream(f);
+            IOUtils.copy(fragment.toURL().openStream(), fos);
+
+            this.fragments.add(new IsoFile(f.getAbsolutePath()));
             time += Long.parseLong(((Element) fragments.get(i)).getAttribute("d").getValue());
         }
 
@@ -194,12 +203,9 @@ public class SmoothStreamingTrack implements Track {
 
     @Override
     public List<ByteBuffer> getSamples() {
-        List<ByteBuffer> samples = new ArrayList<ByteBuffer>();
-        for (IsoFile fragment : fragments) {
-            TrackFragmentBox traf = (TrackFragmentBox) Path.getPath(fragment, "/moof[0]/traf[0]");
-            samples.addAll(new SampleList(traf));
-        }
-        return samples;
+
+        // new FragmentedMp4SampleList()
+        return null;
     }
 
     @Override
