@@ -13,6 +13,7 @@ import com.coremedia.iso.boxes.VideoMediaHeaderBox;
 import com.coremedia.iso.boxes.fragment.TrackRunBox;
 import com.coremedia.iso.boxes.h264.AvcConfigurationBox;
 import com.coremedia.iso.boxes.sampleentry.VisualSampleEntry;
+import com.googlecode.mp4parser.authoring.Sample;
 import com.googlecode.mp4parser.authoring.Track;
 import com.googlecode.mp4parser.authoring.TrackMetaData;
 import com.googlecode.mp4parser.util.Path;
@@ -202,7 +203,7 @@ public class SmoothStreamingTrack implements Track {
     }
 
     @Override
-    public List<ByteBuffer> getSamples() {
+    public List<Sample> getSamples() {
 
         // new FragmentedMp4SampleList()
         return null;
