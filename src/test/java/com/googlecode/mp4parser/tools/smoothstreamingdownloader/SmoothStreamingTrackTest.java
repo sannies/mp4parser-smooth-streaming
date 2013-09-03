@@ -12,6 +12,8 @@ import java.io.RandomAccessFile;
 import java.net.URL;
 import java.nio.channels.FileChannel;
 
+import com.googlecode.mp4parser.DataSource;
+
 /**
  * Created with IntelliJ IDEA.
  * User: sannies
