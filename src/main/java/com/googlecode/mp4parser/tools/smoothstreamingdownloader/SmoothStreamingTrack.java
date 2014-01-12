@@ -113,17 +113,37 @@ public class SmoothStreamingTrack implements Track {
     }
 
     @Override
-    public List<TimeToSampleBox.Entry> getDecodingTimeEntries() {
-        List<TimeToSampleBox.Entry> entries = new LinkedList<TimeToSampleBox.Entry>();
+    public long getDuration() {
+        long dur = 0;
         for (IsoFile fragment : fragments) {
             TrackRunBox trun = (TrackRunBox) Path.getPath(fragment, "/moof[0]/traf[0]/trun[0]");
             for (TrackRunBox.Entry entry : trun.getEntries()) {
-                entries.add(new TimeToSampleBox.Entry(entry.getSampleDuration(), 1));
+                dur += entry.getSampleDuration();
             }
         }
-        return entries;
-
+        return dur;
     }
+
+    @Override
+    public long[] getDecodingTimes() {
+        int sampleNum = 0;
+        for (IsoFile fragment : fragments) {
+            TrackRunBox trun = (TrackRunBox) Path.getPath(fragment, "/moof[0]/traf[0]/trun[0]");
+            sampleNum += trun.getEntries().size();
+        }
+        long[] decodingTimes = new long[sampleNum];
+        sampleNum = 0;
+        for (IsoFile fragment : fragments) {
+            TrackRunBox trun = (TrackRunBox) Path.getPath(fragment, "/moof[0]/traf[0]/trun[0]");
+            for (TrackRunBox.Entry entry : trun.getEntries()) {
+                decodingTimes[sampleNum++] = entry.getSampleDuration();
+            }
+        }
+
+
+        return decodingTimes;
+    }
+
 
     @Override
     public List<CompositionTimeToSample.Entry> getCompositionTimeEntries() {
