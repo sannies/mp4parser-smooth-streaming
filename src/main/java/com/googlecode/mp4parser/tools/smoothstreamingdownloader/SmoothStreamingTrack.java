@@ -3,13 +3,7 @@ package com.googlecode.mp4parser.tools.smoothstreamingdownloader;
 import com.coremedia.iso.Hex;
 import com.coremedia.iso.IsoFile;
 import com.coremedia.iso.IsoTypeReader;
-import com.coremedia.iso.boxes.Box;
-import com.coremedia.iso.boxes.CompositionTimeToSample;
-import com.coremedia.iso.boxes.SampleDependencyTypeBox;
-import com.coremedia.iso.boxes.SampleDescriptionBox;
-import com.coremedia.iso.boxes.SubSampleInformationBox;
-import com.coremedia.iso.boxes.TimeToSampleBox;
-import com.coremedia.iso.boxes.VideoMediaHeaderBox;
+import com.coremedia.iso.boxes.*;
 import com.coremedia.iso.boxes.fragment.TrackRunBox;
 import com.coremedia.iso.boxes.h264.AvcConfigurationBox;
 import com.coremedia.iso.boxes.sampleentry.VisualSampleEntry;
@@ -17,11 +11,7 @@ import com.googlecode.mp4parser.authoring.Sample;
 import com.googlecode.mp4parser.authoring.Track;
 import com.googlecode.mp4parser.authoring.TrackMetaData;
 import com.googlecode.mp4parser.util.Path;
-import nu.xom.Builder;
-import nu.xom.Document;
-import nu.xom.Element;
-import nu.xom.Nodes;
-import nu.xom.ParsingException;
+import nu.xom.*;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
@@ -125,7 +115,7 @@ public class SmoothStreamingTrack implements Track {
     }
 
     @Override
-    public long[] getDecodingTimes() {
+    public long[] getSampleDurations() {
         int sampleNum = 0;
         for (IsoFile fragment : fragments) {
             TrackRunBox trun = (TrackRunBox) Path.getPath(fragment, "/moof[0]/traf[0]/trun[0]");
@@ -202,25 +192,6 @@ public class SmoothStreamingTrack implements Track {
         throw new RuntimeException();
     }
 
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
-    @Override
-    public boolean isInMovie() {
-        return true;
-    }
-
-    @Override
-    public boolean isInPreview() {
-        return true;
-    }
-
-    @Override
-    public boolean isInPoster() {
-        return true;
-    }
 
     @Override
     public List<Sample> getSamples() {
