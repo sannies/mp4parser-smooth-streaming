@@ -22,6 +22,8 @@ import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.googlecode.mp4parser.util.CastUtils.l2i;
+
 public class SmoothStreamingTrack implements Track {
     String fourCC;
     String codecPrivateData;
@@ -141,7 +143,7 @@ public class SmoothStreamingTrack implements Track {
         for (IsoFile fragment : fragments) {
             TrackRunBox trun = (TrackRunBox) Path.getPath(fragment, "/moof[0]/traf[0]/trun[0]");
             for (TrackRunBox.Entry entry : trun.getEntries()) {
-                entries.add(new CompositionTimeToSample.Entry(entry.getSampleCompositionTimeOffset(), 1));
+                entries.add(new CompositionTimeToSample.Entry(l2i(entry.getSampleCompositionTimeOffset()), 1));
             }
         }
         return entries;
