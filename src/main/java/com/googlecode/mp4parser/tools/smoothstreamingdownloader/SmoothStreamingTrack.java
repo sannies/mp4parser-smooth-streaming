@@ -66,6 +66,11 @@ public class SmoothStreamingTrack implements Track {
     }
 
     @Override
+    public void close() throws IOException {
+        // ntohing to close
+    }
+
+    @Override
     public SampleDescriptionBox getSampleDescriptionBox() {
         SampleDescriptionBox stsd = new SampleDescriptionBox();
         if ("avc1".equalsIgnoreCase(fourCC)) {
